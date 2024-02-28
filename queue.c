@@ -14,7 +14,11 @@
 /* Create an empty queue */
 struct list_head *q_new()
 {
-    return NULL;
+    struct list_head *new_queue = malloc(sizeof(struct list_head));
+    if (!new_queue)
+        return NULL;
+    INIT_LIST_HEAD(new_queue);
+    return new_queue;
 }
 
 /* Free all storage used by queue */
@@ -23,12 +27,40 @@ void q_free(struct list_head *head) {}
 /* Insert an element at head of queue */
 bool q_insert_head(struct list_head *head, char *s)
 {
+    if (!head)
+        return false;
+    element_t *new = malloc(sizeof(element_t));
+    if (!new)
+        return false;
+    int size_s = (strlen(s) + 1) * sizeof(char);
+    new->value = malloc(size_s);
+    if (!new->value) {
+        free(new);
+        return false;
+    }
+    memcpy(new->value, s, size_s - 1);
+    new->value[size_s - 1] = '\0';
+    list_add(&new->list, head);
     return true;
 }
 
 /* Insert an element at tail of queue */
 bool q_insert_tail(struct list_head *head, char *s)
 {
+    if (!head)
+        return false;
+    element_t *new = malloc(sizeof(element_t));
+    if (!new)
+        return false;
+    int size_s = (strlen(s) + 1) * sizeof(char);
+    new->value = malloc(size_s);
+    if (!new->value) {
+        free(new);
+        return false;
+    }
+    memcpy(new->value, s, size_s - 1);
+    new->value[size_s - 1] = '\0';
+    list_add_tail(&new->list, head);
     return true;
 }
 
@@ -76,6 +108,16 @@ bool q_delete_dup(struct list_head *head)
 void q_swap(struct list_head *head)
 {
     // https://leetcode.com/problems/swap-nodes-in-pairs/
+    if (!head)
+        return;
+    struct list_head *pos, *n;
+    bool odd = false;
+    list_for_each_safe (pos, n, head) {
+        if (odd) {
+            list_move(pos, pos->prev->prev);
+        }
+        odd = !odd;
+    }
 }
 
 /* Reverse elements in queue */
