@@ -206,27 +206,24 @@ void q_reverseK(struct list_head *head, int k)
     }
 }
 
-int q_merge_two(struct list_head *first, struct list_head *second)
+int q_merge_two(struct list_head *left, struct list_head *right)
 {
-    if (!first || !second)
+    if (!left || !right)
         return 0;
-    int size = 0;
-    struct list_head temp_head;
-    INIT_LIST_HEAD(&temp_head);
-    while (!list_empty(first) && !list_empty(second)) {
-        element_t *first_front = list_first_entry(first, element_t, list);
-        element_t *second_front = list_first_entry(second, element_t, list);
-        char *first_str = first_front->value, *second_str = second_front->value;
-        element_t *minimum =
-            strcmp(first_str, second_str) < 0 ? first_front : second_front;
-        list_move_tail(&minimum->list, &temp_head);
-        size++;
+    int size = q_size(left) + q_size(right);
+    struct list_head new_list;
+    INIT_LIST_HEAD(&new_list);
+    while (!list_empty(left) && !list_empty(right)) {
+        element_t *left_element = list_first_entry(left, element_t, list);
+        element_t *right_element = list_first_entry(right, element_t, list);
+        element_t *min = strcmp(left_element->value, right_element->value) < 0
+                             ? left_element
+                             : right_element;
+        list_move_tail(&min->list, &new_list);
     }
-    size += q_size(first);
-    list_splice_tail_init(first, &temp_head);
-    size += q_size(second);
-    list_splice_tail_init(second, &temp_head);
-    list_splice(&temp_head, first);
+    q_size(left) ? list_splice_tail_init(left, &new_list)
+                 : list_splice_tail_init(right, &new_list);
+    list_splice(&new_list, left);
     return size;
 }
 
@@ -240,8 +237,8 @@ void q_sort(struct list_head *head, bool descend)
         slow = slow->next;
     struct list_head left;
     list_cut_position(&left, head, slow);
-    q_sort(&left, descend);
     q_sort(head, descend);
+    q_sort(&left, descend);
     q_merge_two(head, &left);
 }
 
@@ -316,5 +313,19 @@ int q_descend(struct list_head *head)
 int q_merge(struct list_head *head, bool descend)
 {
     // https://leetcode.com/problems/merge-k-sorted-lists/
-    return 0;
+    if (!head || list_empty(head))
+        return 0;
+    if (list_is_singular(head))
+        return q_size(list_first_entry(head, queue_contex_t, chain)->q);
+    int queue_size = 0;
+    queue_contex_t *first, *second;
+    first = list_first_entry(head, queue_contex_t, chain),
+    second = list_entry(first->chain.next, queue_contex_t, chain);
+    while (second->q) {
+        queue_size = q_merge_two(first->q, second->q);
+        second->q = NULL;
+        list_move_tail(&second->chain, head);
+        second = list_entry(first->chain.next, queue_contex_t, chain);
+    }
+    return queue_size;
 }
