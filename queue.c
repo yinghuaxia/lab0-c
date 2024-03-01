@@ -231,7 +231,32 @@ void q_sort(struct list_head *head, bool descend)
 int q_ascend(struct list_head *head)
 {
     // https://leetcode.com/problems/remove-nodes-from-linked-list/
-    return 0;
+    if (!head || list_empty(head))
+        return 0;
+    int len = 1;
+    struct list_head *cursor = head->prev;
+    if (cursor == head)
+        return len;
+    char *record = list_entry(cursor, element_t, list)->value;
+    for (cursor = head->prev; cursor->prev != head;) {
+        len++;
+        element_t *cur_element = list_entry(cursor, element_t, list);
+        struct list_head *prev_cursor = cursor->prev;
+        if (strcmp(cur_element->value, record) > 0) {
+            list_del(&cur_element->list);
+            q_release_element(cur_element);
+            len--;
+        } else
+            record = cur_element->value;
+        cursor = prev_cursor;
+    }
+    element_t *cur_element = list_entry(cursor, element_t, list);
+    if (strcmp(cur_element->value, record) > 0) {
+        list_del(&cur_element->list);
+        q_release_element(cur_element);
+        len--;
+    }
+    return len;
 }
 
 /* Remove every node which has a node with a strictly greater value anywhere to
@@ -241,35 +266,29 @@ int q_descend(struct list_head *head)
     // https://leetcode.com/problems/remove-nodes-from-linked-list/
     if (!head || list_empty(head))
         return 0;
+    int len = 1;
     struct list_head *cursor = head->prev;
     if (cursor == head)
-        return 1;
-    int len = 1;
+        return len;
     char *record = list_entry(cursor, element_t, list)->value;
-    // printf("%s\n", record);
     for (cursor = head->prev; cursor->prev != head;) {
         len++;
         element_t *cur_element = list_entry(cursor, element_t, list);
         struct list_head *prev_cursor = cursor->prev;
         if (strcmp(cur_element->value, record) < 0) {
-            // printf("in compare 1, delete %s \n", cur_element->value);
             list_del(&cur_element->list);
             q_release_element(cur_element);
             len--;
-        } else {
-            // printf("in compare 2 \n");
+        } else
             record = cur_element->value;
-        }
         cursor = prev_cursor;
     }
     element_t *cur_element = list_entry(cursor, element_t, list);
     if (strcmp(cur_element->value, record) < 0) {
-        // printf("in compare 1, delete %s \n", cur_element->value);
         list_del(&cur_element->list);
         q_release_element(cur_element);
         len--;
     }
-    printf("len:%i \n", len);
     return len;
 }
 
