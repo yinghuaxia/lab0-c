@@ -207,7 +207,24 @@ void q_reverseK(struct list_head *head, int k)
 }
 
 /* Sort elements of queue in ascending/descending order */
-void q_sort(struct list_head *head, bool descend) {}
+void q_sort(struct list_head *head, bool descend)
+{
+    /*if (!head || list_empty(head) || !head->next)
+        return;
+    struct list_head *fast = head->next;
+    struct list_head *slow = head;
+    while(fast && fast->next) {
+        slow = slow->next;
+        fast = fast->next->next;
+    }
+    fast = slow->next;
+    slow->next = NULL;
+    // sort each list
+    struct list_head *l1 = q_sort(head, descend);
+    struct list_head *l2 = q_sort(fast, descend);
+    // merge sorted l1 and sorted l2
+    return merge(l1, l2);*/
+}
 
 /* Remove every node which has a node with a strictly less value anywhere to
  * the right side of it */
@@ -222,7 +239,38 @@ int q_ascend(struct list_head *head)
 int q_descend(struct list_head *head)
 {
     // https://leetcode.com/problems/remove-nodes-from-linked-list/
-    return 0;
+    if (!head || list_empty(head))
+        return 0;
+    struct list_head *cursor = head->prev;
+    if (cursor == head)
+        return 1;
+    int len = 1;
+    char *record = list_entry(cursor, element_t, list)->value;
+    // printf("%s\n", record);
+    for (cursor = head->prev; cursor->prev != head;) {
+        len++;
+        element_t *cur_element = list_entry(cursor, element_t, list);
+        struct list_head *prev_cursor = cursor->prev;
+        if (strcmp(cur_element->value, record) < 0) {
+            // printf("in compare 1, delete %s \n", cur_element->value);
+            list_del(&cur_element->list);
+            q_release_element(cur_element);
+            len--;
+        } else {
+            // printf("in compare 2 \n");
+            record = cur_element->value;
+        }
+        cursor = prev_cursor;
+    }
+    element_t *cur_element = list_entry(cursor, element_t, list);
+    if (strcmp(cur_element->value, record) < 0) {
+        // printf("in compare 1, delete %s \n", cur_element->value);
+        list_del(&cur_element->list);
+        q_release_element(cur_element);
+        len--;
+    }
+    printf("len:%i \n", len);
+    return len;
 }
 
 /* Merge all the queues into one sorted queue, which is in ascending/descending
