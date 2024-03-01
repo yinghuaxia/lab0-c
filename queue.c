@@ -221,8 +221,8 @@ int q_merge_two(struct list_head *left, struct list_head *right)
                              : right_element;
         list_move_tail(&min->list, &new_list);
     }
-    q_size(left) ? list_splice_tail_init(left, &new_list)
-                 : list_splice_tail_init(right, &new_list);
+    list_splice_tail_init(left, &new_list);
+    list_splice_tail_init(right, &new_list);
     list_splice(&new_list, left);
     return size;
 }
