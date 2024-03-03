@@ -195,16 +195,15 @@ void q_reverseK(struct list_head *head, int k)
     if (!head || list_empty(head))
         return;
     int count = 0;
-    struct list_head *pos, *n, *cut = head;
+    struct list_head *pos, *n, *cut = head, tmp;
     list_for_each_safe (pos, n, head) {
-        if (++count == k) {
-            LIST_HEAD(tmp);
+        if (count % k == k - 1) {
             list_cut_position(&tmp, cut->next, pos);
             q_reverse(&tmp);
             list_splice(&tmp, cut);
             cut = n->prev;
-            count = 0;
         }
+        count++;
     }
 }
 
