@@ -26,7 +26,7 @@
 /* Shannon entropy */
 extern double shannon_entropy(const uint8_t *input_data);
 extern int show_entropy;
-
+extern void q_shuffle(struct list_head *head);
 /* Our program needs to use regular malloc/free */
 #define INTERNAL 1
 #include "harness.h"
