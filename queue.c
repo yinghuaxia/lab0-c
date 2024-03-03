@@ -195,14 +195,16 @@ void q_reverseK(struct list_head *head, int k)
     if (!head || list_empty(head))
         return;
     int count = 0;
-    struct list_head *pos, *n;
+    struct list_head *pos, *n, *cut = head;
     list_for_each_safe (pos, n, head) {
-        count += 1;
-        if (count <= k) {
-            list_move(pos, head);
-        } else
-            break;
-        pos->prev = head;
+        if (++count == k) {
+            LIST_HEAD(tmp);
+            list_cut_position(&tmp, cut->next, pos);
+            q_reverse(&tmp);
+            list_splice(&tmp, cut);
+            cut = n->prev;
+            count = 0;
+        }
     }
 }
 
@@ -313,19 +315,5 @@ int q_descend(struct list_head *head)
 int q_merge(struct list_head *head, bool descend)
 {
     // https://leetcode.com/problems/merge-k-sorted-lists/
-    if (!head || list_empty(head))
-        return 0;
-    if (list_is_singular(head))
-        return q_size(list_first_entry(head, queue_contex_t, chain)->q);
-    int queue_size = 0;
-    queue_contex_t *first, *second;
-    first = list_first_entry(head, queue_contex_t, chain),
-    second = list_entry(first->chain.next, queue_contex_t, chain);
-    while (second->q) {
-        queue_size = q_merge_two(first->q, second->q);
-        second->q = NULL;
-        list_move_tail(&second->chain, head);
-        second = list_entry(first->chain.next, queue_contex_t, chain);
-    }
-    return queue_size;
+    return 0;
 }
