@@ -1,29 +1,27 @@
 # Demonstration of queue testing framework
 # Use help command to see list of commands and options
 # Initial queue is NULL.
-show
-option fail 0
-option malloc 0
 new
-ih a
-ih r
-ih b
-sort
+it a
+it b
+it c
+it d
+shuffle
 new
-ih m
-ih n
-ih a
-sort
+it a
+it b
+it c
+it d
+shuffle
 new
-ih r
-ih c
-ih z
-sort
-# merge
-merge
-reverse
-rh z
-rh r
-rh r
-rh n
-quit
+it a
+it b
+it c
+it d
+shuffle
+new
+it a
+it b
+it c
+it d
+shuffle

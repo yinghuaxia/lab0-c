@@ -331,3 +331,22 @@ int q_merge(struct list_head *head, bool descend)
     list_splice_tail(&first, list_entry(head->next, queue_contex_t, chain)->q);
     return size;
 }
+
+void q_shuffle(struct list_head *head)
+{
+    if (!head || list_empty(head))
+        return;
+    int size = q_size(head) - 1;
+    struct list_head *node;
+    for (node = head->prev; node != head; node = node->prev, size--) {
+        struct list_head *other = head->next;
+        for (int j = rand() % (size + 1); j > 0; j--)
+            other = other->next;
+        if (node == other)
+            continue;
+        struct list_head *temp = other->prev;
+        list_move(other, node);
+        list_move(node, temp);
+        node = other;
+    }
+}
