@@ -326,6 +326,8 @@ int q_merge(struct list_head *head, bool descend)
         q_merge_two(&first, right->q);
     }
     int size = q_size(&first);
+    if (descend)
+        q_reverse(&first);
     list_splice_tail(&first, list_entry(head->next, queue_contex_t, chain)->q);
     return size;
 }
