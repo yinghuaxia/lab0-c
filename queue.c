@@ -84,10 +84,9 @@ element_t *q_remove_head(struct list_head *head, char *sp, size_t bufsize)
     if (sp && bufsize) {
         strncpy(sp, add->value, bufsize - 1);
         sp[bufsize - 1] = '\0';
-        list_del(&add->list);
-        return add;
     }
-    return NULL;
+    list_del(&add->list);
+    return add;
 }
 
 /* Remove an element from tail of queue */
@@ -99,11 +98,11 @@ element_t *q_remove_tail(struct list_head *head, char *sp, size_t bufsize)
     if (sp && bufsize) {
         strncpy(sp, add->value, bufsize - 1);
         sp[bufsize - 1] = '\0';
-        list_del(&add->list);
-        return add;
     }
-    return NULL;
+    list_del(&add->list);
+    return add;
 }
+
 
 /* Return number of elements in queue */
 int q_size(struct list_head *head)
