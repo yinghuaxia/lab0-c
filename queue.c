@@ -337,16 +337,16 @@ void q_shuffle(struct list_head *head)
     if (!head || list_empty(head))
         return;
     int size = q_size(head) - 1;
-    struct list_head *node;
-    for (node = head->prev; node != head; node = node->prev, size--) {
-        struct list_head *other = head->next;
+    struct list_head *tail;
+    for (tail = head->prev; tail != head; tail = tail->prev, size--) {
+        struct list_head *new = head->next;
         for (int j = rand() % (size + 1); j > 0; j--)
-            other = other->next;
-        if (node == other)
+            new = new->next;
+        if (tail == new)
             continue;
-        struct list_head *temp = other->prev;
-        list_move(other, node);
-        list_move(node, temp);
-        node = other;
+        struct list_head *temp = new->prev;
+        list_move(new, tail);
+        list_move(tail, temp);
+        tail = new;
     }
 }
