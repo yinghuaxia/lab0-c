@@ -1363,3 +1363,4 @@ int line_history_load(const char *filename)
     fclose(fp);
     return 0;
 }
+

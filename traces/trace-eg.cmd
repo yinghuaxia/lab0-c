@@ -2,22 +2,28 @@
 # Use help command to see list of commands and options
 # Initial queue is NULL.
 show
-# Create empty queue
+option fail 0
+option malloc 0
 new
-# See how long it is
-size
-# Fill it with some values.  First at the head
-ih dolphin
-ih bear
-ih gerbil
-# Now at the tail
-it meerkat
-it bear
-# Reverse it
+ih a
+ih r
+ih b
+sort
+new
+ih m
+ih n
+ih a
+sort
+new
+ih r
+ih c
+ih z
+sort
+# merge
+merge
 reverse
-# See how long it is
-size
-# Delete queue.  Goes back to a NULL queue.
-free
-# Exit program
+rh z
+rh r
+rh r
+rh n
 quit
