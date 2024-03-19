@@ -21,12 +21,18 @@
 
 #include "dudect/fixture.h"
 #include "list.h"
+#include "list_sort.h"
 #include "random.h"
+
+/*typedef int __attribute__((nonnull(2,3))) (*list_cmp_func_t)(void *,
+        struct list_head *, struct list_head *);*/
+extern void q_shuffle(struct list_head *head);
+// extern void q_list_sort(void *priv, struct list_head *head, list_cmp_func_t
+// cmp);
 
 /* Shannon entropy */
 extern double shannon_entropy(const uint8_t *input_data);
 extern int show_entropy;
-extern void q_shuffle(struct list_head *head);
 /* Our program needs to use regular malloc/free */
 #define INTERNAL 1
 #include "harness.h"
@@ -56,7 +62,6 @@ extern void q_shuffle(struct list_head *head);
  * and whether cautious mode is used when freeing the queue
  */
 #define BIG_LIST_SIZE 30
-
 /* Global variables */
 
 typedef struct {
@@ -1032,9 +1037,60 @@ static bool do_shuffle(int argc, char *argv[])
     return !error_check();
 }
 
+bool do_list_sort(int argc, char *argv[])
+{
+    if (argc != 1) {
+        report(1, "%s takes no arguments", argv[0]);
+        return false;
+    }
+
+    int cnt = 0;
+    if (!current || !current->q)
+        report(3, "Warning: Calling sort on null queue");
+    else
+        cnt = q_size(current->q);
+    error_check();
+
+    if (cnt < 2)
+        report(3, "Warning: Calling sort on single node");
+    error_check();
+
+    set_noallocate_mode(true);
+    if (current && exception_setup(true)) {
+        list_sort(NULL, current->q, cmp);
+    }
+    exception_cancel();
+    set_noallocate_mode(false);
+
+    bool ok = true;
+    if (current && current->size) {
+        for (struct list_head *cur_l = current->q->next;
+             cur_l != current->q && --cnt; cur_l = cur_l->next) {
+            /* Ensure each element in ascending/descending order */
+            element_t *item, *next_item;
+            item = list_entry(cur_l, element_t, list);
+            next_item = list_entry(cur_l->next, element_t, list);
+            if (!descend && strcmp(item->value, next_item->value) > 0) {
+                report(1, "ERROR: Not sorted in ascending order");
+                ok = false;
+                break;
+            }
+
+            if (descend && strcmp(item->value, next_item->value) < 0) {
+                report(1, "ERROR: Not sorted in descending order");
+                ok = false;
+                break;
+            }
+        }
+    }
+
+    q_show(3);
+    return ok && !error_check();
+}
 
 static void console_init()
 {
+    ADD_COMMAND(list_sort, "sort list using list sort", "");
     ADD_COMMAND(shuffle, "Shuffle all nodes in the list", "");
     ADD_COMMAND(new, "Create new queue", "");
     ADD_COMMAND(free, "Delete queue", "");
