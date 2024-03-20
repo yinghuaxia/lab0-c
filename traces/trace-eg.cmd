@@ -1,27 +1,6 @@
-# Demonstration of queue testing framework
-# Use help command to see list of commands and options
-# Initial queue is NULL.
+option fail 0
+option malloc 0
 new
-it a
-it b
-it c
-it d
-shuffle
-new
-it a
-it b
-it c
-it d
-shuffle
-new
-it a
-it b
-it c
-it d
-shuffle
-new
-it a
-it b
-it c
-it d
-shuffle
+ih RAND 10
+timsort
+free

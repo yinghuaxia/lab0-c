@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <stdint.h>
 #include "queue.h"
 
 /* Notice: sometimes, Cppcheck would find the potential NULL pointer bugs,
@@ -9,7 +10,6 @@
  * following line.
  *   cppcheck-suppress nullPointer
  */
-
 
 /* Create an empty queue */
 struct list_head *q_new()
