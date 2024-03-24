@@ -56,6 +56,15 @@ qtest: $(OBJS)
 check: qtest
 	./$< -v 3 -f traces/trace-eg.cmd
 
+check-massif: qtest
+	valgrind --tool=massif ./$< -v 3 -f traces/trace-massif.cmd
+
+check-memcheck: qtest
+	valgrind --tool=memcheck ./$< -v 3 -f traces/trace-massif.cmd
+
+check-cachegrind: qtest
+	valgrind --tool=cachegrind ./$< -v 3 -f traces/trace-massif.cmd
+
 test: qtest scripts/driver.py
 	scripts/driver.py -c
 
